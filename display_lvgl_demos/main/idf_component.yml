@@ -1,0 +1,5 @@
+description: BSP Display rotation example
+
+dependencies:
+  idf: ">=5.0"
+  espressif/m5stack_core_s3: "^4.1.0"

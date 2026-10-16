@@ -1,0 +1,5 @@
+::esptool.py --chip esp32 --port "/dev/ttyUSB1" --baud $((230400*4)) write_flash -fs 4MB 0x100000 "$1"
+
+esptool.py --chip esp32s3 --baud 921600 write_flash -fs 4MB 0x100000 ..\supermario.nes
+esptool.py --chip esp32s3 --baud 921600 write_flash -fs 4MB 0x200000 ..\donkeykong.nes
+esptool.py --chip esp32s3 --baud 921600 write_flash -fs 4MB 0x300000 ..\qbert.nes
