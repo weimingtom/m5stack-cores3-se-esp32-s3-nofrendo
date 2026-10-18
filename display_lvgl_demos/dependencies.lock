@@ -198,7 +198,7 @@ dependencies:
       require: private
       version: '>=4.0'
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     version: 1.5.2
   espressif/m5stack_core_s3:
@@ -339,8 +339,9 @@ dependencies:
       type: service
     version: 9.6.0~1
 direct_dependencies:
+- espressif/i2c_bus
 - espressif/m5stack_core_s3
 - idf
-manifest_hash: 95da607d3750984d899f11d97d09cc16df759c3e184aad6d4ea92ce7e1db759c
+manifest_hash: 28d3c4d64404ba50e5f1e81228bfb9fa8db9e3c6c4caf6d7b5abc58037eb38d7
 target: esp32s3
 version: 2.0.0

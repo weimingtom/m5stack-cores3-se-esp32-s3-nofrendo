@@ -30,11 +30,11 @@ if(CONFIG_LV_USE_DEMO_BENCHMARK)
 endif()
 
 idf_component_register(
-    SRCS "main.c" "osd.c" ${LV_DEMOS_SOURCES} ${T_SOURCES} ${IMAGES} 
+    SRCS "main.c" "osd.c" "m5_cores3_keyboard.cpp" ${LV_DEMOS_SOURCES} ${T_SOURCES} ${IMAGES} 
 	#${T_SOURCES} 
 	${CPU_SOURCES} ${NSS_SOURCES} ${NES_SOURCES} ${SNDHRDW_SOURCES} ${MAP_SOURCES}
     INCLUDE_DIRS "cpu" "libsnss" "nes" "sndhrdw" "." ${LV_DEMO_DIR} 
-    PRIV_REQUIRES nvs_flash
+    PRIV_REQUIRES nvs_flash m5_tab5_keyboard_component
 )
 #driver 
 #nofrendo

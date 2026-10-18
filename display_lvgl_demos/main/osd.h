@@ -72,6 +72,23 @@ typedef struct sndinfo_s
    int bps;
 } sndinfo_t;
 
+
+typedef struct
+{    
+    bool    btn_select:1;
+    bool    btn_start:1;
+    bool    btn_up:1;
+    bool    btn_down:1;
+    bool    btn_right:1;
+    bool    btn_left:1;
+
+    bool    btn_a:1;
+    bool    btn_b:1;
+} gamepad_t;
+extern /*static*/ gamepad_t app_gamepad;
+extern /*static*/ gamepad_t app_gamepad_tmp;
+
+
 /* get info */
 extern void osd_getvideoinfo(vidinfo_t *info);
 extern void osd_getsoundinfo(sndinfo_t *info);

@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: CC0-1.0
  */
 #define USE_USB 0
+#define USE_I2C 1
  
 #include "nofrendo.h"
 #include "bsp/esp-bsp.h"
 #include "usb/usb_host.h"
 #include "esp_log.h"
+#include "m5_cores3_keyboard.h"
 
 static const char *TAG = "NES";
 
@@ -43,6 +45,10 @@ int app_main(void)
     ESP_ERROR_CHECK(usb_host_install(&host_config));
     
     xTaskCreate(usb_host_task, "usb_lib", 4096, xTaskGetCurrentTaskHandle(), 2, NULL);
+#endif
+
+#if USE_I2C
+	//app_i2c_keyboard_init();
 #endif
 
     /* Initialize display and LVGL */

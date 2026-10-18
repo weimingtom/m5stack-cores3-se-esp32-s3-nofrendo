@@ -9,6 +9,7 @@
 *******************************************************************************/
 
 #define USE_USB 0
+#define USE_I2C 0
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/timers.h>
@@ -46,6 +47,10 @@ static const char *TAG = "OSD";
 #include "usb/hid_usage_mouse.h"
 #endif
 
+#if USE_I2C
+#include "m5_cores3_keyboard.h"
+#endif
+
 #define APP_DEFAULT_WIDTH  256
 #define APP_DEFAULT_HEIGHT 240
 #define APP_DEFAULT_SCALE  (BSP_LCD_V_RES/APP_DEFAULT_HEIGHT)
@@ -62,19 +67,6 @@ typedef struct {
     void *arg;
 } app_usb_hid_event_t;
 #endif
-
-typedef struct
-{    
-    bool    btn_select:1;
-    bool    btn_start:1;
-    bool    btn_up:1;
-    bool    btn_down:1;
-    bool    btn_right:1;
-    bool    btn_left:1;
-
-    bool    btn_a:1;
-    bool    btn_b:1;
-} gamepad_t;
 
 /*******************************************************************************
 * Function definitions
@@ -126,8 +118,9 @@ static uint8_t * vid_buffer = NULL;
 /* USB variables */
 static QueueHandle_t hid_queue = NULL;
 #endif
-static gamepad_t app_gamepad;
-static gamepad_t app_gamepad_tmp;
+
+/*static*/ gamepad_t app_gamepad;
+/*static*/ gamepad_t app_gamepad_tmp;
 
 /* GAME */
 static const char * APP_GAME_SUPERMARIO = "nesrom1";
@@ -189,6 +182,10 @@ int osd_init(void)
 
 #if USE_USB   
    app_hid_init();
+#endif
+
+#if USE_I2C
+   app_i2c_keyboard_init(bsp_i2c_get_handle());
 #endif
 
    bsp_display_lock(0);
