@@ -1,0 +1,8 @@
+description: Graphics library for M5Stack series
+issues: https://github.com/m5stack/M5GFX/issues
+repository: git://github.com/m5stack/M5GFX.git
+repository_info:
+  commit_sha: 347a23274081a105cb9fc0fc3bbf0e15c78e79c3
+  path: .
+url: https://github.com/m5stack/M5GFX.git
+version: 0.2.33
