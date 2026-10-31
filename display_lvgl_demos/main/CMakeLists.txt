@@ -45,3 +45,13 @@ set_source_files_properties(
     PROPERTIES COMPILE_OPTIONS
     -DLV_LVGL_H_INCLUDE_SIMPLE)
 endif()
+
+#D:/Espressif/frameworks/display_lvgl_demos/main/libsnss/libsnss.c:89:4: error: 'strncpy' output may be truncated copying 4 bytes from a string #of length 4 [-Werror=stringop-truncation]
+#   89 |    strncpy (&headerBytes[0], header->tag, TAG_LENGTH);
+#      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+#component_compile_options(-Wno-error=stringop-truncation)
+set_source_files_properties(
+    ${CPU_SOURCES} ${NSS_SOURCES} ${NES_SOURCES} ${SNDHRDW_SOURCES} ${MAP_SOURCES}
+    PROPERTIES COMPILE_OPTIONS
+    -Wno-error=stringop-truncation)
+

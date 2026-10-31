@@ -1,8 +1,8 @@
-managed_components/**
+#managed_components/**
 build/*
-dependencies.lock
-sdkconfig
-sdkconfig.old
+#dependencies.lock
+#sdkconfig
+#sdkconfig.old
 .vscode/*
 .devcontainer/*
 games/*

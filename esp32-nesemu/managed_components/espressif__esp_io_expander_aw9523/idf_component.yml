@@ -1,0 +1,12 @@
+dependencies:
+  esp_io_expander:
+    public: true
+    version: ^1.2.0
+  idf: '>=5.2'
+description: ESP IO Expander - AW9523
+repository: git://github.com/espressif/esp-bsp.git
+repository_info:
+  commit_sha: c9aefc4a0df424b5beb262f06172e632587bdc47
+  path: components/io_expander/esp_io_expander_aw9523
+url: https://github.com/espressif/esp-bsp/tree/master/components/io_expander/esp_io_expander_aw9523
+version: 1.0.0
