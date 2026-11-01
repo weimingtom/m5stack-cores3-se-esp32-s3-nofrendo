@@ -1,0 +1,16 @@
+D:\Espressif\frameworks\display_lvgl_demos\main\m5_cores3_keyboard.cpp
+C:\work\m5stack-cores3-se-esp32-s3-nofrendo\display_lvgl_demos
+
+
+	//FIXME:NOTE: Be careful, .begin() or ->begin() must be at the end of the init code
+    // Initialize keyboard using standard I2C_NUM_1 and hardware interrupt pin
+	m5_tab5_kb_err_t kb_err;
+	if (bus != nullptr) {
+		kb_err =
+        device_kb.begin(bus, M5_TAB5_KB_DEFAULT_ADDR,
+                        M5_TAB5_KB_I2C_FREQ_400K, M5_TAB5_KB_DEFAULT_INT, M5_TAB5_KB_INT_MODE_HARDWARE);
+	} else {
+		kb_err =
+        device_kb.begin(I2C_NUM_1, M5_TAB5_KB_DEFAULT_ADDR, M5_TAB5_KB_DEFAULT_SDA, M5_TAB5_KB_DEFAULT_SCL,
+                        M5_TAB5_KB_I2C_FREQ_400K, M5_TAB5_KB_DEFAULT_INT, M5_TAB5_KB_INT_MODE_HARDWARE);		
+	}
