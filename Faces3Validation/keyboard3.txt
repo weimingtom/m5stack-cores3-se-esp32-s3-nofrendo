@@ -1,0 +1,121 @@
+M5Faces Keyboard3 Validation
+
+API:23/23 Keys:2/35 ID:0x02 V:0x03 Fn:1/6 Direct
+Key: Q->q
+Key: W->w
+
+------------------
+
+FV_BOOT board=CoreS3 targets=Calculator3,Keyboard3,Gamepad3 testfw=IDF2.8.0
+FV_BOARD_CACHE target=CoreS3 result=PASS
+FV_I2C bus=IN port=1 sda=12 scl=11 init=PASS board_id=17
+FV_HOST_INPUT touch=enabled touch_button_height=0
+FV_HOST_CONTROL source=bottom_touch init=PASS y=220 zones=0-106,107-213,214-319
+FV_PROBE addr=0x08 model_result=0 model=0x02 fw_result=0 fw=0x03
+FV_DETECT model=Keyboard3 id=0x02 fw=0x03 addr=0x08 decision=0 pending=0
+FV_VERSION model=Keyboard3 current=0x03 latest=0x03 result=LATEST action=SKIP
+FV_API name=active_driver result=PASS
+FV_API name=not_initialized_error result=PASS
+FV_API name=initialized result=PASS
+FV_API name=model_name result=PASS
+FV_API name=iap_firmware_catalog result=PASS
+FV_API name=get_model result=PASS
+FV_API name=model_match result=PASS
+FV_API name=subclass_model_mismatch result=PASS
+FV_API name=supports_direct result=PASS
+FV_API name=device_uid result=PASS detail=520021000757484139393220
+FV_API name=firmware_version result=PASS
+FV_API name=i2c_address_read result=PASS
+FV_API name=version_addr_batch result=PASS
+FV_API name=raw_read result=PASS
+FV_API name=invalid_arguments result=PASS
+FV_API name=freq_400k result=PASS
+FV_API name=freq_100k result=PASS
+FV_API name=mode_normal result=PASS
+FV_API name=mode_direct result=PASS
+FV_LED mode=0x00 readback=0x00 result=PASS
+FV_LED mode=0x01 readback=0x01 result=PASS
+FV_LED mode=0x02 readback=0x02 result=PASS
+FV_LED mode=0x03 readback=0x03 result=PASS
+FV_LED mode=0x04 readback=0x04 result=PASS
+FV_LED mode=0x05 readback=0x05 result=PASS
+FV_LED mode=0x06 readback=0x06 result=PASS
+FV_LED mode=0x07 readback=0x07 result=PASS
+FV_LED mode=0x08 readback=0x08 result=PASS
+FV_API name=led_modes_0_8 result=PASS
+FV_API name=mode_led_batch result=PASS
+FV_SKIP api=i2c_address_change_restore reason=user_trigger_required action=host_C
+FV_SKIP api=arduino_wire_transport reason=esp_idf_native_m5unified_transport
+FV_API name=interrupt_default_state result=PASS
+FV_API name=keyboard_helpers result=PASS
+FV_SKIP api=rgb reason=arduino_build_no_neopixel_backend
+FV_SKIP api=interrupt reason=no_interrupt_gpio_configured
+FV_API_SUMMARY result=PASS passed=23 total=23
+FV_RESET model=Keyboard3 progress=0/35
+
+-----
+
+FV_BOOT board=CoreS3 targets=Calculator3,Keyboard3,Gamepad3 testfw=IDF2.8.0
+FV_BOARD_CACHE target=CoreS3 result=PASS
+
+FV_DETECT model=Keyboard3 id=0x02 fw=0x03 addr=0x08 decision=0 pending=0
+FV_VERSION model=Keyboard3 current=0x03 latest=0x03 result=LATEST action=SKIP
+
+---------------
+Keyboard3, Q
+
+I (280759) M5Faces: Direct evt raw: [00 00 00 00 00 00 00 00 00 00] -> [0A 81 FF 13 FF 23 FF 30 1F F3] OK keys=[Q] (x42949)
+I (280759) M5Faces: Direct evt pressed OK [81 FF 13 FF 23 FF 30 1F F3] keys=[Q]
+FV_RUNTIME_API name=keyboard_direct_parser result=PASS
+FV_KEY model=Keyboard3 key=Q output=q code=0x71 progress=1/35
+I (280788) M5Faces: Direct evt raw: [0A 81 FF 13 FF 23 FF 30 1F F3] -> [00 00 00 00 00 00 00 00 00 00] NO_DATA (x1)
+
+
+D:\Espressif\frameworks\Faces3Validation\components\M5Faces\examples\Arduino\Faces3Validation\Faces3Validation.cpp
+
+handle_keyboard_direct()
+{
+}
+void direct_event_callback(m5faces_direct_event_t event, const m5faces_direct_data_t* frame, uint32_t, void*)
+{
+    if (g_model == M5Faces_Keyboard3::MODEL_ID && frame) {
+        handle_keyboard_direct(event, *frame);
+    }
+}
+M5Faces_Calculator3 g_calculator;
+M5Faces_Gamepad3 g_gamepad;
+M5Faces_Keyboard3 g_keyboard;
+M5FacesPoller g_poller;
+RunState g_state = RunState::waiting;
+setup() {
+    g_poller.setPollingMode(true);
+    g_poller.setNormalKeyCb(normal_key_callback);
+    g_poller.setDirectEventCb(direct_event_callback);
+}
+
+
+-------------
+
+I (280913) M5Faces: Direct evt raw: [00 00 00 00 00 00 00 00 00 00] -> [0A 83 FF 13 FF 23 FF 30 1F F1] OK (x19)
+I (280914) M5Faces: Direct evt released [81 FF 13 FF 23 FF 30 1F F3] keys=[Q] (held x20)
+FV_RUNTIME_API name=keyboard_direct_release result=PASS
+FV_RELEASE model=Keyboard3 mode=direct held=20
+I (280941) M5Faces: Direct evt raw: [0A 83 FF 13 FF 23 FF 30 1F F1] -> [00 00 00 00 00 00 00 00 00 00] NO_DATA (x1)
+
+=======================================
+
+Keyboard3, W, pressed-released
+
+I (288487) M5Faces: Direct evt raw: [00 00 00 00 00 00 00 00 00 00] -> [0A 82 FF 13 FF 23 FF 30 1F F2] OK keys=[W] (x1163)
+I (288488) M5Faces: Direct evt pressed OK [82 FF 13 FF 23 FF 30 1F F2] keys=[W]
+FV_RUNTIME_API name=keyboard_direct_parser result=PASS
+FV_KEY model=Keyboard3 key=W output=w code=0x77 progress=2/35
+I (288517) M5Faces: Direct evt raw: [0A 82 FF 13 FF 23 FF 30 1F F2] -> [00 00 00 00 00 00 00 00 00 00] NO_DATA (x1)
+
+----
+
+I (288642) M5Faces: Direct evt raw: [00 00 00 00 00 00 00 00 00 00] -> [0A 83 FF 13 FF 23 FF 30 1F F1] OK (x19)
+I (288643) M5Faces: Direct evt released [82 FF 13 FF 23 FF 30 1F F2] keys=[W] (held x20)
+FV_RUNTIME_API name=keyboard_direct_release result=PASS
+FV_RELEASE model=Keyboard3 mode=direct held=20
+I (288670) M5Faces: Direct evt raw: [0A 83 FF 13 FF 23 FF 30 1F F1] -> [00 00 00 00 00 00 00 00 00 00] NO_DATA (x1)
