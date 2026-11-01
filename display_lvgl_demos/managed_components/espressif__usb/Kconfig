@@ -199,6 +199,20 @@ menu "USB-OTG"
 
     endmenu #Hub Driver Configuration
 
+    menu "Power management"
+
+        config USB_HOST_AUTO_PM_LIGHT_SLEEP
+            bool "Automatically suspend root port before light sleep"
+            depends on ESP_SLEEP_EVENT_CALLBACKS
+            default n
+            help
+                Register light sleep event callbacks to automatically suspend the root port when the SoC
+                enters light sleep.
+
+                Requires ESP_SLEEP_EVENT_CALLBACKS to be enabled in the menuconfig.
+
+    endmenu #Power management
+
     config USB_HOST_ENABLE_ENUM_FILTER_CALLBACK
         bool "Enable enumeration filter callback"
         default n
@@ -211,13 +225,14 @@ menu "USB-OTG"
             'usb_host_install()'.
 
     config USB_HOST_DWC_DMA_CAP_MEMORY_IN_PSRAM
-        depends on IDF_TARGET_ESP32P4 && SPIRAM
+        depends on (IDF_TARGET_ESP32P4 || IDF_TARGET_ESP32S31) && SPIRAM
         bool "Allocate USB_DWC DMA capable memory in PSRAM"
         default n
         help
-            In the ESP32P4, the USB-DWC internal DMA can access external RAM. Enabling this configuration can save
-            internal RAM by allocating the memory buffers used by the USB-DWC peripheral's DMA to external RAM.
-            However, it introduces minor performance degradation due to the overhead of accessing external RAM.
+            In the ESP32P4 and ESP32S31, the USB-DWC internal DMA can access external RAM. Enabling this
+            configuration can save internal RAM by allocating the memory buffers used by the USB-DWC peripheral's
+            DMA to external RAM. However, it introduces minor performance degradation due to the overhead of
+            accessing external RAM.
         # Todo: IDF-11368 (aligned memory alloc size)
 
     # Hidden or compatibility options

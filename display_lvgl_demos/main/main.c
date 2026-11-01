@@ -10,7 +10,8 @@
 #include "bsp/esp-bsp.h"
 #include "usb/usb_host.h"
 #include "esp_log.h"
-#include "m5_cores3_keyboard.h"
+//#include "m5_cores3_keyboard.h"
+#include "m5_cores3_keyboard3.h"
 
 static const char *TAG = "NES";
 
@@ -48,7 +49,7 @@ int app_main(void)
 #endif
 
 #if USE_I2C
-	//app_i2c_keyboard_init();
+	//xxxx_app_i2c_keyboard_init();
 #endif
 
     /* Initialize display and LVGL */

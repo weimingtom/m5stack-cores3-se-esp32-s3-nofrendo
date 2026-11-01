@@ -21,6 +21,11 @@ extern "C" {
 
 // ------------------------------------------------- Macros & Types ----------------------------------------------------
 
+// Register light sleep callbacks to automatically suspend the root port when light sleep is entered
+#ifdef CONFIG_USB_HOST_AUTO_PM_LIGHT_SLEEP
+#define AUTO_PM_LIGHT_SLEEP
+#endif // CONFIG_USB_HOST_AUTO_PM_LIGHT_SLEEP
+
 // ----------------------- Configs -------------------------
 
 #define HCD_NUM_PORTS                           SOC_USB_OTG_PERIPH_NUM   // Each peripheral is a root port
@@ -75,9 +80,7 @@ typedef enum {
     HCD_PORT_EVENT_DISCONNECTION,   /**< A device disconnection has been detected */
     HCD_PORT_EVENT_ERROR,           /**< A port error has been detected. Port is now HCD_PORT_STATE_RECOVERY  */
     HCD_PORT_EVENT_OVERCURRENT,     /**< Overcurrent detected on the port. Port is now HCD_PORT_STATE_RECOVERY */
-#ifdef REMOTE_WAKE_HAL_SUPPORTED
     HCD_PORT_EVENT_REMOTE_WAKEUP,   /**< A remote-wakeup event from device has been detected */
-#endif // REMOTE_WAKE_HAL_SUPPORTED
 } hcd_port_event_t;
 
 /**
@@ -108,6 +111,10 @@ typedef enum {
     HCD_PORT_CMD_SUSPEND,           /**< Suspend the port. All pipes must be halted */
     HCD_PORT_CMD_RESUME,            /**< Resume the port */
     HCD_PORT_CMD_DISABLE,           /**< Disable the port (stops the SOFs or keep alive). All pipes must be halted. */
+#ifdef AUTO_PM_LIGHT_SLEEP
+    // Non-blocking version of suspend sequence, should be used only from enter light sleep callback
+    HCD_PORT_CMD_SUSPEND_LIGHT_SLEEP,   /**< Suspend the port from light sleep callback */
+#endif // AUTO_PM_LIGHT_SLEEP
 } hcd_port_cmd_t;
 
 /**
@@ -170,6 +177,10 @@ typedef struct {
     void *context;                          /**< Context variable used to associate the port with upper layer object */
     const hcd_fifo_settings_t *fifo_config; /**< Optional pointer to custom FIFO config. If NULL, default configuration is used. */
     int intr_flags;                         /**< Interrupt flags for HCD interrupt */
+    bool fsls_only;                         /**< If set, High-Speed capable USB-OTG peripherals operate as
+                                                 Full/Low-Speed only hosts. The host will not respond to a connected
+                                                 device's High-Speed chirp. Has no effect on Full-Speed only
+                                                 peripherals. */
 } hcd_port_config_t;
 
 /**
@@ -203,6 +214,7 @@ typedef struct {
  *    - ESP_ERR_INVALID_STATE: The port is already enabled
  *    - ESP_ERR_NOT_FOUND: Port number not found
  *    - ESP_ERR_INVALID_ARG: Arguments are invalid
+ *    - ESP_ERR_NOT_SUPPORTED: `fsls_only` was requested but the ESP-IDF USB DWC HAL does not support it
  */
 esp_err_t hcd_port_init(int port_number, const hcd_port_config_t *port_config, hcd_port_handle_t *port_hdl);
 
@@ -357,6 +369,18 @@ esp_err_t hcd_pipe_alloc(hcd_port_handle_t port_hdl, const hcd_pipe_config_t *pi
  *    - HCD pipe mps
  */
 int hcd_pipe_get_mps(hcd_pipe_handle_t pipe_hdl);
+
+/**
+ * @brief Get the maximum transfer size (in bytes) the controller can move in a single bulk/control transfer
+ *
+ * The limit is floored to a whole number of maximum-sized packets.
+ * Periodic (INTR/ISOC) transfers are instead bounded by their descriptor list length and are not covered by this value.
+ *
+ * @param[in] pipe_hdl Pipe handle
+ *
+ * @return Maximum transfer size in bytes for a bulk/control transfer on this pipe
+ */
+int hcd_pipe_get_xfer_size_limit(hcd_pipe_handle_t pipe_hdl);
 
 /**
  * @brief Free a pipe

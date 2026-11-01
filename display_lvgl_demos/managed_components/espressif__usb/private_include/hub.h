@@ -66,6 +66,7 @@ typedef struct {
     void *event_cb_arg;                             /**< Hub event callback argument */
     int intr_flags;                                 /**< Interrupt flags for HCD interrupt */
     const hcd_fifo_settings_t *fifo_config;         /**< Optional pointer to custom FIFO config. If NULL, default configuration is used. */
+    bool fsls_only;                                 /**< Operate High-Speed root ports as Full/Low-Speed only. */
 } hub_config_t;
 
 // ---------------------------------------------- Hub Driver Functions -------------------------------------------------
@@ -87,6 +88,7 @@ typedef struct {
  *    - ESP_ERR_INVALID_STATE: Hub driver is not in correct state to be installed
  *    - ESP_ERR_NO_MEM: Insufficient memory
  *    - ESP_ERR_INVALID_ARG: Arguments are invalid
+ *    - ESP_ERR_NOT_SUPPORTED: `fsls_only` was requested but the ESP-IDF USB DWC HAL does not support it
  */
 esp_err_t hub_install(hub_config_t *hub_config, void **client_ret);
 
@@ -193,6 +195,42 @@ esp_err_t hub_root_mark_suspend(void);
  *    - ESP_ERR_NOT_ALLOWED: Root port is in other than suspended state
  */
 esp_err_t hub_root_mark_resume(void);
+
+#ifdef AUTO_PM_LIGHT_SLEEP
+
+/**
+ * @brief Mark the Hub driver's root port as ready to exit the light sleep
+ *
+ * This will mark the root port as ready to exit light sleep and will be processed by the hub processing loop.
+ * In multi-port configurations, this currently targets the first enabled root port only.
+ * @note This function:
+ *   - Delivers deferred suspend notification (as the root port had entered the light sleep before) to the clients
+ *   - Treats potential device disconnect in the light sleep, if that happened no suspend notification will be delivered
+ *
+ * @return
+ *    - ESP_OK: Hub driver marked to exit light sleep successfully
+ *    - ESP_ERR_INVALID_STATE: Hub driver is not installed
+ *    - ESP_ERR_NOT_ALLOWED: Root port is in other than suspended state
+ */
+esp_err_t hub_root_mark_exit_light_sleep(void);
+
+/**
+ * @brief Minimal root suspend for automatic light sleep (synchronous)
+ *
+ * Halt and flush all device endpoints, issue HCD_PORT_CMD_SUSPEND_LIGHT_SLEEP on the root port, mark the root hub
+ * suspended, and update USBH device suspended state without client-visible suspend events (those follow on resume).
+ *
+ * @note The device actions are done synchronously to decrease enter light sleep latency
+ *
+ * @return
+ *   - ESP_OK: Root port successfully suspended, already suspended, powered off, or no device connected
+ *   - ESP_ERR_INVALID_STATE: Hub driver is in invalid state
+ *   - ESP_ERR_NOT_FINISHED: HCD port is not in a correct state to be suspended (executing reset, recovery, resume sequence..)
+ *   - Other errors from calling functions
+ */
+esp_err_t hub_root_light_sleep_suspend_bus(void);
+
+#endif // AUTO_PM_LIGHT_SLEEP
 
 /**
  * @brief Indicate to the Hub driver that a device's port can be recycled

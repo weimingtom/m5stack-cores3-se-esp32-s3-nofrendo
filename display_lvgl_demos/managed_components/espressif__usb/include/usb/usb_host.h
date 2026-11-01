@@ -4,10 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
-Warning: The USB Host Library API is still a beta version and may be subject to change
-*/
-
 #pragma once
 
 #include <stdint.h>
@@ -24,6 +20,8 @@ extern "C" {
 #endif
 
 // ------------------------------------------------- Macros and Types --------------------------------------------------
+
+#define REMOTE_WAKE_HAL_SUPPORTED (1)  // Define for class drivers that this version of usb component supports the remote wakeup HAL API.
 
 // ----------------------- Handles -------------------------
 
@@ -50,6 +48,7 @@ typedef enum {
     USB_HOST_CLIENT_EVENT_DEV_GONE,                 /**< A device opened by the client is now gone */
     USB_HOST_CLIENT_EVENT_DEV_SUSPENDED,            /**< A device opened by the client is now suspended */
     USB_HOST_CLIENT_EVENT_DEV_RESUMED,              /**< A device opened by the client is now resumed */
+    USB_HOST_CLIENT_EVENT_DEV_REMOVED,              /**< A device has been removed. No device handle is provided */
 } usb_host_client_event_t;
 
 /**
@@ -80,6 +79,9 @@ typedef struct {
         struct {
             usb_device_handle_t dev_hdl;        /**< The handle of the device that was gone */
         } dev_gone;                             /**< Gone device info */
+        struct {
+            uint8_t address;                    /**< Removed device's address */
+        } dev_removed;                          /**< Removed device info */
         struct {
             usb_device_handle_t dev_hdl;        /**< The handle of the device that was suspended/resumed */
         } dev_suspend_resume;                   /**< Suspend/Resume device info */
@@ -143,6 +145,9 @@ typedef struct {
                                        - On Full-Speed only targets, the default is the Full-Speed peripheral.
                                        - Example: peripheral_map = BIT1; installs USB host on peripheral 1.
                                        - The mapping of bits to specific peripherals is defined in the USB_DWC_LL_GET_HW() macro. */
+    bool fsls_only;               /**< If set, High-Speed capable USB-OTG peripherals operate as Full/Low-Speed only
+                                       hosts. The host will not respond to a connected device's High-Speed chirp.
+                                       Has no effect on Full-Speed only peripherals. */
 } usb_host_config_t;
 
 /**
@@ -153,6 +158,10 @@ typedef struct {
 typedef struct {
     bool is_synchronous;        /**< Whether the client is asynchronous or synchronous or not. Set to false for now. */
     int max_num_event_msg;      /**< Maximum number of event messages that can be stored (e.g., 3) */
+    struct {
+        uint32_t notify_dev_removed: 1;         /**< Whether the client should receive USB_HOST_CLIENT_EVENT_DEV_REMOVED events */
+        uint32_t reserved31: 31;                /**< Reserved for future use. Set to 0 */
+    } flags;                                    /**< Client behavior flags */
     union {     // Note: Made into union or future expansion
         struct {
             usb_host_client_event_cb_t client_event_callback;   /**< Client's event callback function */
@@ -174,6 +183,8 @@ typedef struct {
  *       called.
  *
  * @note In dual host configuration, fifo_settings_custom field is ignored and intr_flags field is used for all ports.
+ * @note `fsls_only` must be set at install time. The underlying USB-DWC core latches Full/Low-Speed only support
+ *       during Host Controller initialization and applies it on the first port reset.
  *
  * @param[in] config USB Host Library configuration
  * @return
@@ -182,6 +193,7 @@ typedef struct {
  *    - ESP_ERR_INVALID_STATE: USB Host Library is not in correct state to be installed
  *      (eg. the library itself of one of it's drivers is already installed)
  *    - ESP_ERR_NO_MEM: Insufficient memory
+ *    - ESP_ERR_NOT_SUPPORTED: `fsls_only` was requested but the ESP-IDF USB DWC HAL does not support it
  */
 esp_err_t usb_host_install(const usb_host_config_t *config);
 

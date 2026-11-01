@@ -135,7 +135,7 @@ dependencies:
       type: service
     version: 2.9.0
   espressif/esp_sccb_intf:
-    component_hash: eb6a7d5c992f09583c163b2e3f5e95a0fdc87a2d9f8e026f3e59153935553889
+    component_hash: fcf118cd29a1caaf3b09bacd99975bc035c996b470474dfb950202c16e06d7b5
     dependencies:
     - name: idf
       require: private
@@ -143,7 +143,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 0.0.9
+    version: 1.0.0
   espressif/esp_video:
     component_hash: ba8f4aa63ad9bda3cc18a3afe1b9ba5b39c7359a6ad79392a94e42ba8cf9e5f8
     dependencies:
@@ -264,11 +264,11 @@ dependencies:
       type: service
     version: 0.1.5
   espressif/usb:
-    component_hash: 1d90d7c7b0682dbfcc36f47cf5acf224a5cfb850a62f39cd86d3159cfec12a81
+    component_hash: 99eee72ea224d9117d4c342442717a1f20bf8112e2ab5d7d7038b827874f4c92
     dependencies:
     - name: idf
       require: private
-      version: '>=5.4'
+      version: '>=5.5.3'
     source:
       registry_url: https://components.espressif.com
       type: service
@@ -279,7 +279,7 @@ dependencies:
     - esp32p4
     - esp32h4
     - linux
-    version: 1.4.1
+    version: 1.6.0
   espressif/usb_host_uvc:
     component_hash: f20c4e4dea50536e2e29daaf589b5f5984402284c155867daef27d6b64869f78
     dependencies:
@@ -342,6 +342,6 @@ direct_dependencies:
 - espressif/i2c_bus
 - espressif/m5stack_core_s3
 - idf
-manifest_hash: 28d3c4d64404ba50e5f1e81228bfb9fa8db9e3c6c4caf6d7b5abc58037eb38d7
+manifest_hash: 655093fa6bbd8375c891098ce63e0b69e53f838be0cb92121ce17dfa10dd4e84
 target: esp32s3
 version: 2.0.0

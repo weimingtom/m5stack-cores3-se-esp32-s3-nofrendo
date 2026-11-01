@@ -9,7 +9,7 @@
 *******************************************************************************/
 
 #define USE_USB 0
-#define USE_I2C 0
+#define USE_I2C 1
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/timers.h>
@@ -48,7 +48,7 @@ static const char *TAG = "OSD";
 #endif
 
 #if USE_I2C
-#include "m5_cores3_keyboard.h"
+#include "m5_cores3_keyboard3.h"
 #endif
 
 #define APP_DEFAULT_WIDTH  256
