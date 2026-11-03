@@ -10,6 +10,8 @@
 
 #define USE_USB 0
 #define USE_I2C 1
+#define TEST_SCREEN_COLOR 0
+//vid_buffer
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/timers.h>
@@ -24,6 +26,7 @@
 
 static const char *TAG = "OSD";
 
+//vid_buffer
 #define LOBYTE(u16)     ((uint8_t)(((uint16_t)(u16)) & 0xff))
 #define HIBYTE(u16)     ((uint8_t)((((uint16_t)(u16))>>8) & 0xff))
 
@@ -192,8 +195,18 @@ int osd_init(void)
    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
    lvgl_video_canvas = lv_canvas_create(lv_scr_act());
 #if LV_VERSION_CHECK(9, 0, 0)
-   lv_canvas_set_buffer(lvgl_video_canvas, vid_buffer, APP_DEFAULT_SCALE*APP_DEFAULT_WIDTH, APP_DEFAULT_SCALE*APP_DEFAULT_HEIGHT, LV_COLOR_FORMAT_RGB565);
+//https://lvgl.100ask.net/9.2/widgets/canvas.html#overview
+//https://github.com/lvgl/lvgl/tree/release/v9.6/examples/widgets/canvas
+//https://github.com/lvgl/lvgl/blob/release/v9.2/examples/widgets/canvas/lv_example_canvas_1.c
+//https://lvgl.io/docs/open/9.4/details/main-modules/image
+//https://lvgl.io/docs/open/9.4/API/misc/lv_color_h.html
+   lv_canvas_set_buffer(lvgl_video_canvas, vid_buffer, APP_DEFAULT_SCALE*APP_DEFAULT_WIDTH, APP_DEFAULT_SCALE*APP_DEFAULT_HEIGHT, LV_COLOR_FORMAT_RGB565_SWAPPED); //LV_COLOR_FORMAT_RGB565); //LV_COLOR_FORMAT_RGB888); 
+   //FIXME:
+   //dont' use 24bit=LV_COLOR_FORMAT_RGB888
+   //don't use 32bit=LV_COLOR_FORMAT_ARGB8888 
+   //don't use 16bit=LV_COLOR_FORMAT_RGB565
 #else
+//https://lvgl.100ask.net/7.11/documentation/04_widgets/07_canvas.html
    lv_canvas_set_buffer(lvgl_video_canvas, vid_buffer, APP_DEFAULT_SCALE*APP_DEFAULT_WIDTH, APP_DEFAULT_SCALE*APP_DEFAULT_HEIGHT, LV_IMG_CF_TRUE_COLOR);
 #endif
    lv_obj_center(lvgl_video_canvas);
@@ -497,14 +510,19 @@ static void app_osd_video_set_palette(rgb_t *palette)
 /* clear all frames to a particular color */
 static void app_osd_video_clear(uint8 color)
 {
+#if TEST_SCREEN_COLOR
+   uint16_t my_color = 0xF800;
+#else
+   uint16_t my_color = colorPalette[color];
+#endif
    bsp_display_lock(0);
 
    for(int x=0; x<APP_DEFAULT_WIDTH; x++)
    {
       for(int y=0; y<APP_DEFAULT_HEIGHT; y++)
       {
-         vid_buffer[(x*APP_DEFAULT_HEIGHT*2) + (y*2)] = HIBYTE(colorPalette[color]);
-         vid_buffer[(x*APP_DEFAULT_HEIGHT*2) + (y*2)+1] = LOBYTE(colorPalette[color]);
+         vid_buffer[(x*APP_DEFAULT_HEIGHT*2) + (y*2)] = HIBYTE(my_color);
+         vid_buffer[(x*APP_DEFAULT_HEIGHT*2) + (y*2)+1] = LOBYTE(my_color);
       }
    }
 
@@ -526,11 +544,14 @@ static void app_osd_video_free_write(int num_dirties, rect_t *dirty_rects)
 }
 
 static void app_osd_video_custom_blit(bitmap_t *primary, int num_dirties, rect_t *dirty_rects)
-{	
+{   
+#if TEST_SCREEN_COLOR
+   app_osd_video_clear(0);
+#else
    const uint8_t * data = primary->data;
 
    bsp_display_lock(0);
-
+   
    for (int y=0; y<APP_DEFAULT_HEIGHT; y++) {
       for (int x=0; x<APP_DEFAULT_WIDTH; x++) {
          for (int z=0; z<APP_DEFAULT_SCALE; z++) {
@@ -545,6 +566,7 @@ static void app_osd_video_custom_blit(bitmap_t *primary, int num_dirties, rect_t
    
    lv_obj_invalidate(lvgl_video_canvas);
    bsp_display_unlock();
+#endif
 }
 
 #if USE_USB
