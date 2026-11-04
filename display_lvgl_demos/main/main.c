@@ -8,7 +8,9 @@
  
 #include "nofrendo.h"
 #include "bsp/esp-bsp.h"
+#if USE_USB
 #include "usb/usb_host.h"
+#endif
 #include "esp_log.h"
 //#include "m5_cores3_keyboard.h"
 #include "m5_cores3_keyboard3.h"

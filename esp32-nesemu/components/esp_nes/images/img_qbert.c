@@ -837,11 +837,12 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_IMG_QBERT
 };
 
 const lv_img_dsc_t img_qbert = {
-#if LV_VERSION_CHECK(9, 0, 0)
-  .header.cf = LV_COLOR_FORMAT_ARGB8888,
+#if LV_VERSION_CHECK(9, 0, 0)  
+  .header.cf = LV_COLOR_FORMAT_RGB565, //LV_COLOR_FORMAT_RGB565_SWAPPED, //LV_COLOR_FORMAT_RGB565 //don't use swap
+  .header.magic = LV_IMAGE_HEADER_MAGIC,
   .header.flags = 0,
-  .header.stride = 560, //w*4
-  .data_size = 28000 * LV_COLOR_DEPTH / 8,
+  .header.stride = 280, //w*2 //can without this ???
+  .data_size = 28000 * LV_COLOR_DEPTH / 8, //sizeof(img_qbert_map), //same
 #else	
   .header.cf = LV_IMG_CF_TRUE_COLOR,
   .header.always_zero = 0,
